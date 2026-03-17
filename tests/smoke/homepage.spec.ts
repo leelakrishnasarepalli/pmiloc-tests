@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('homepage loads', async ({ page }) => {
 
-  await page.goto('https://pmiloc.org', { waitUntil: 'networkidle' });
+  await page.goto('https://pmiloc.org', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
   // wait until Cloudflare challenge disappears
   await page.waitForFunction(() => !document.title.includes("Just a moment"), { timeout: 20000 });
