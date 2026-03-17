@@ -34,9 +34,15 @@ test('dei event register', async ({ page }) => {
   await page.goto('https://pmiloc.org', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
   // Wait briefly for the real site to render; otherwise fail fast with context.
-  await expect
-    .poll(async () => (await page.title().catch(() => '')).trim(), { timeout: 20000 })
-    .not.toMatch(/just a moment/i);
+  try {
+    await expect
+      .poll(async () => (await page.title().catch(() => '')).trim(), { timeout: 20000 })
+      .not.toMatch(/just a moment/i);
+  } catch (e) {
+    // If we timed out because we're blocked, throw an actionable error instead.
+    await assertNotBlocked();
+    throw e;
+  }
   await assertNotBlocked();
 
   await page.getByRole('link', { name: 'DEI (Culture)' }).click();
